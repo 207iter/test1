@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>행운의 로또 번호 추천기</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #ffffff;
+            --accent-color: #ff6b6b;
+            --btn-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff8e53, #ff6b6b, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p.subtitle {
+            color: #a0a0c0;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        .balls-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+            min-height: 60px;
+            align-items: center;
+        }
+        .ball {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        /* Lotto ball colors based on number ranges */
+        .ball-yellow { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #333; }
+        .ball-blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .ball-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .ball-gray { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+        .ball-green { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .placeholder {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        button {
+            background: var(--btn-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            margin-bottom: 25px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        .history-section {
+            text-align: left;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+        .history-title {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            margin-bottom: 10px;
+        }
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .history-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #d0d0e0;
+        }
+        .history-numbers {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍀 행운의 로또 번호</h1>
+        <p class="subtitle">오늘의 대박 행운을 잡으세요!</p>
+        
+        <div class="balls-container" id="ballsContainer">
+            <span class="placeholder">아래 버튼을 눌러 번호를 생성하세요!</span>
+        </div>
+        
+        <button onclick="generateLottoNumbers()">번호 추천 받기</button>
+        
+        <div class="history-section">
+            <div class="history-title">최근 추천 기록</div>
+            <div class="history-list" id="historyList">
+                <div class="placeholder" style="font-size:0.85rem; text-align:center;">기록이 없습니다.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getBallClass(num) {
+            if (num <= 10) return 'ball-yellow';
+            if (num <= 20) return 'ball-blue';
+            if (num <= 30) return 'ball-red';
+            if (num <= 40) return 'ball-gray';
+            return 'ball-green';
+        }
+
+        function generateLottoNumbers() {
+            const numbers = [];
+            while (numbers.length < 6) {
+                const rand = Math.floor(Math.random() * 45) + 1;
+                if (!numbers.includes(rand)) {
+                    numbers.push(rand);
+                }
+            }
+            numbers.sort((a, b) => a - b);
+
+            const container = document.getElementById('ballsContainer');
+            container.innerHTML = '';
+
+            numbers.forEach((num, index) => {
+                const ball = document.createElement('div');
+                ball.className = `ball ${getBallClass(num)}`;
+                ball.textContent = num;
+                ball.style.animationDelay = `${index * 0.1}s`;
+                container.appendChild(ball);
+            });
+
+            addHistory(numbers);
+        }
+
+        function addHistory(numbers) {
+            const historyList = document.getElementById('historyList');
+            if (historyList.querySelector('.placeholder')) {
+                historyList.innerHTML = '';
+            }
+
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            
+            const now = new Date();
+            const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            
+            item.innerHTML = `
+                <span class="history-numbers">${numbers.join(', ')}</span>
+                <span style="color: #888; font-size: 0.75rem;">${timeString}</span>
+            `;
+
+            historyList.prepend(item);
+
+            // Keep max 5 history items
+            if (historyList.children.length > 5) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+    </script>
+</body>
+</html>
