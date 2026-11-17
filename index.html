@@ -7,16 +7,36 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(30, 30, 45, 0.7);
             --text-color: #ffffff;
-            --accent-color: #ff6b6b;
+            --subtitle-color: #a0a0c0;
+            --card-border: rgba(255, 255, 255, 0.1);
             --btn-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            --history-item-bg: rgba(255, 255, 255, 0.03);
+            --history-item-color: #d0d0e0;
+            --toggle-bg: rgba(255, 255, 255, 0.1);
+            --toggle-color: #ffffff;
         }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #2c3e50;
+            --subtitle-color: #555555;
+            --card-border: rgba(0, 0, 0, 0.1);
+            --btn-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            --history-item-bg: rgba(0, 0, 0, 0.04);
+            --history-item-color: #2c3e50;
+            --toggle-bg: rgba(0, 0, 0, 0.08);
+            --toggle-color: #2c3e50;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         body {
             background: var(--bg-gradient);
@@ -27,16 +47,36 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--toggle-bg);
+            color: var(--toggle-color);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .theme-toggle:hover {
+            transform: scale(1.05);
         }
         .container {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 40px;
             width: 100%;
             max-width: 500px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
         h1 {
@@ -47,7 +87,7 @@
             -webkit-text-fill-color: transparent;
         }
         p.subtitle {
-            color: #a0a0c0;
+            color: var(--subtitle-color);
             margin-bottom: 30px;
             font-size: 0.95rem;
         }
@@ -84,11 +124,11 @@
         .ball-gray { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
         .ball-green { background: linear-gradient(135deg, #2ecc71, #27ae60); }
         .placeholder {
-            color: #6c757d;
+            color: var(--subtitle-color);
             font-style: italic;
             font-size: 1rem;
         }
-        button {
+        button.generate-btn {
             background: var(--btn-gradient);
             color: white;
             border: none;
@@ -101,21 +141,21 @@
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
             margin-bottom: 25px;
         }
-        button:hover {
+        button.generate-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
         }
-        button:active {
+        button.generate-btn:active {
             transform: translateY(1px);
         }
         .history-section {
             text-align: left;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--card-border);
             padding-top: 20px;
         }
         .history-title {
             font-size: 0.9rem;
-            color: #a0a0c0;
+            color: var(--subtitle-color);
             margin-bottom: 10px;
         }
         .history-list {
@@ -126,14 +166,14 @@
             gap: 8px;
         }
         .history-item {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--history-item-bg);
             padding: 8px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #d0d0e0;
+            color: var(--history-item-color);
         }
         .history-numbers {
             font-weight: bold;
@@ -141,7 +181,11 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span> <span id="themeText">라이트모드</span>
+    </button>
+
     <div class="container">
         <h1>🍀 행운의 로또 번호</h1>
         <p class="subtitle">오늘의 대박 행운을 잡으세요!</p>
@@ -150,7 +194,7 @@
             <span class="placeholder">아래 버튼을 눌러 번호를 생성하세요!</span>
         </div>
         
-        <button onclick="generateLottoNumbers()">번호 추천 받기</button>
+        <button class="generate-btn" onclick="generateLottoNumbers()">번호 추천 받기</button>
         
         <div class="history-section">
             <div class="history-title">최근 추천 기록</div>
@@ -161,6 +205,31 @@
     </div>
 
     <script>
+        // Theme initialization
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+        }
+
+        function updateThemeUI(theme) {
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (theme === 'light') {
+                icon.textContent = '🌙';
+                text.textContent = '다크모드';
+            } else {
+                icon.textContent = '☀️';
+                text.textContent = '라이트모드';
+            }
+        }
+
         function getBallClass(num) {
             if (num <= 10) return 'ball-yellow';
             if (num <= 20) return 'ball-blue';
@@ -207,12 +276,11 @@
             
             item.innerHTML = `
                 <span class="history-numbers">${numbers.join(', ')}</span>
-                <span style="color: #888; font-size: 0.75rem;">${timeString}</span>
+                <span style="color: var(--subtitle-color); font-size: 0.75rem;">${timeString}</span>
             `;
 
             historyList.prepend(item);
 
-            // Keep max 5 history items
             if (historyList.children.length > 5) {
                 historyList.removeChild(historyList.lastChild);
             }
