@@ -182,9 +182,12 @@
     </style>
 </head>
 <body data-theme="dark">
-    <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
-        <span id="themeIcon">☀️</span> <span id="themeText">라이트모드</span>
-    </button>
+    <div class="top-nav" style="position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;">
+        <a href="contact.html" class="nav-btn" style="background: var(--toggle-bg); color: var(--toggle-color); border: 1px solid var(--card-border); border-radius: 30px; padding: 8px 16px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-decoration: none;">🤝 제휴 문의</a>
+        <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" style="position: static;">
+            <span id="themeIcon">☀️</span> <span id="themeText">라이트모드</span>
+        </button>
+    </div>
 
     <div class="container">
         <h1>🍀 행운의 로또 번호</h1>
