@@ -235,6 +235,21 @@
             <button type="submit" class="submit-btn" id="submitBtn">문의 내용 전송하기</button>
             <div id="form-status"></div>
         </form>
+
+        <!-- 댓글 기능 섹션 (Utterances / Giscus 연동) -->
+        <div style="margin-top: 40px; border-top: 1px solid var(--card-border); padding-top: 30px;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 15px; text-align: left; color: var(--text-color);">💬 방문자 한줄 피드백 및 댓글</h2>
+            <p style="color: var(--subtitle-color); font-size: 0.85rem; margin-bottom: 20px; text-align: left;">GitHub 계정으로 로그인하여 자유롭게 의견을 남겨주세요.</p>
+            
+            <!-- Utterances 댓글창 (GitHub Issues 연동, 100% 무료/무광고) -->
+            <script src="https://utteranc.es/utterances.js"
+                    repo="207iter/test1"
+                    issue-term="pathname"
+                    theme="preferred-color-scheme"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </div>
     </div>
 
     <script>
