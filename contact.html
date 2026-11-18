@@ -236,19 +236,23 @@
             <div id="form-status"></div>
         </form>
 
-        <!-- 댓글 기능 섹션 (Utterances / Giscus 연동) -->
+        <!-- 비회원 방명록 / 댓글 폼 섹션 -->
         <div style="margin-top: 40px; border-top: 1px solid var(--card-border); padding-top: 30px;">
-            <h2 style="font-size: 1.2rem; margin-bottom: 15px; text-align: left; color: var(--text-color);">💬 방문자 한줄 피드백 및 댓글</h2>
-            <p style="color: var(--subtitle-color); font-size: 0.85rem; margin-bottom: 20px; text-align: left;">GitHub 계정으로 로그인하여 자유롭게 의견을 남겨주세요.</p>
+            <h2 style="font-size: 1.2rem; margin-bottom: 10px; text-align: left; color: var(--text-color);">💬 한줄 방명록 & 피드백</h2>
+            <p style="color: var(--subtitle-color); font-size: 0.85rem; margin-bottom: 20px; text-align: left;">로그인 없이 이름과 내용만 입력하여 자유롭게 한마디를 남겨주세요!</p>
             
-            <!-- Utterances 댓글창 (GitHub Issues 연동, 100% 무료/무광고) -->
-            <script src="https://utteranc.es/utterances.js"
-                    repo="207iter/test1"
-                    issue-term="pathname"
-                    theme="preferred-color-scheme"
-                    crossorigin="anonymous"
-                    async>
-            </script>
+            <form id="commentForm" action="https://formspree.io/f/mljbbvze" method="POST" style="text-align: left;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="commentName" style="font-size: 0.85rem; margin-bottom: 5px;">작성자</label>
+                    <input type="text" id="commentName" name="comment_author" placeholder="이름 또는 닉네임" required style="padding: 10px 14px; font-size: 0.9rem;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="commentText" style="font-size: 0.85rem; margin-bottom: 5px;">내용</label>
+                    <textarea id="commentText" name="comment_message" placeholder="자유로운 의견이나 격려의 한마디를 남겨주세요." required style="min-height: 80px; padding: 10px 14px; font-size: 0.9rem;"></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="commentSubmitBtn" style="padding: 10px 20px; font-size: 1rem;">방명록 남기기</button>
+                <div id="comment-status" style="margin-top: 10px; text-align: center; font-size: 0.9rem;"></div>
+            </form>
         </div>
     </div>
 
@@ -323,6 +327,42 @@
         }
         
         form.addEventListener("submit", handleSubmit);
+
+        // Comment / Guestbook AJAX submission handler
+        const commentForm = document.getElementById("commentForm");
+        if (commentForm) {
+            commentForm.addEventListener("submit", async function(event) {
+                event.preventDefault();
+                const status = document.getElementById("comment-status");
+                const btn = document.getElementById("commentSubmitBtn");
+                const data = new FormData(event.target);
+                
+                btn.disabled = true;
+                btn.textContent = "등록 중...";
+                status.innerHTML = "";
+
+                try {
+                    const response = await fetch(event.target.action, {
+                        method: commentForm.method,
+                        body: data,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (response.ok) {
+                        status.innerHTML = "✨ 소중한 방명록이 성공적으로 등록되었습니다!";
+                        status.className = "success-message";
+                        commentForm.reset();
+                    } else {
+                        status.innerHTML = "❌ 등록 중 문제가 발생했습니다. 다시 시도해 주세요.";
+                        status.className = "error-message";
+                    }
+                } catch (error) {
+                    status.innerHTML = "❌ 네트워크 오류가 발생했습니다.";
+                    status.className = "error-message";
+                }
+                btn.disabled = false;
+                btn.textContent = "방명록 남기기";
+            });
+        }
     </script>
 </body>
 </html>
